@@ -60,19 +60,14 @@ const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
   // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
   const invy1 = 1 / y1;
-  const z =
-    // constant
+  const z0 =
     centerPoint[2] +
     rightSlope * A0 +
     upSlope * A0 * y0 * -invy1 +
-    upSlope * -centerPoint[1] * invy1 +
-    // x
-    rightSlope * A1 * x +
-    upSlope * A1 * x * y0 * -invy1 +
-    // y
-    rightSlope * A2 * y +
-    upSlope * y * invy1 +
-    upSlope * A2 * y * y0 * -invy1;
+    upSlope * -centerPoint[1] * invy1;
+  const zx = rightSlope * A1 + upSlope * A1 * y0 * -invy1;
+  const zy = rightSlope * A2 + upSlope * invy1 + upSlope * A2 * y0 * -invy1;
+  const z = z0 + zx * x + zy * y;
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
   // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
