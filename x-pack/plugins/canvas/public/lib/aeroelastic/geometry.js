@@ -34,8 +34,7 @@ import { invert, mvMultiply, normalize, ORIGIN } from './matrix';
  *
  */
 
-const shapeAtPoint = (shape, index, x, y) => {
-  const { transformMatrix, a, b } = shape;
+const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
   // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
   const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
@@ -59,15 +58,21 @@ const shapeAtPoint = (shape, index, x, y) => {
   const inverseProjection = invert(transformMatrix);
   const intersection = normalize(mvMultiply(inverseProjection, [x, y, z, 1]));
   const [sx, sy] = intersection;
+  const inside = Math.abs(sx) <= a && Math.abs(sy) <= b;
 
   // z is needed downstream, to tell which one is the closest shape hit by an x, y ray (shapes can be tilted in z)
   // it looks weird to even return items where inside === false, but it could be useful for hotspots outside the rectangle
-  return { z, intersection, inside: Math.abs(sx) <= a && Math.abs(sy) <= b, shape, index };
+
+  return {
+    z,
+    intersection,
+    inside,
+  };
 };
 
 // set of shapes under a specific point
 const shapesAtPoint = (shapes, x, y) =>
-  shapes.map((shape, index) => shapeAtPoint(shape, index, x, y));
+  shapes.map((shape, index) => ({ ...rectangleAtPoint(shape, x, y), shape, index }));
 
 // Z-order the possibly several shapes under the same point.
 // Since CSS X points to the right, Y to the bottom (not the top!) and Z toward the viewer, it's a left-handed coordinate
