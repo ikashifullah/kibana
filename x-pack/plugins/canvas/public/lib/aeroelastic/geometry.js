@@ -33,39 +33,41 @@ import { invert, mvMultiply, normalize, ORIGIN } from './matrix';
  * b = (y - a * y0) / y1
  *
  */
+
+const shapeAtPoint = (shape, index, x, y) => {
+  const { transformMatrix, a, b } = shape;
+  // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
+  // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
+  const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
+  const rightPoint = normalize(mvMultiply(transformMatrix, [1, 0, 0, 1]));
+  const upPoint = normalize(mvMultiply(transformMatrix, [0, 1, 0, 1]));
+  const x0 = rightPoint[0] - centerPoint[0];
+  const y0 = rightPoint[1] - centerPoint[1];
+  const x1 = upPoint[0] - centerPoint[0];
+  const y1 = upPoint[1] - centerPoint[1];
+  const A = (x - centerPoint[0] - ((y - centerPoint[1]) / y1) * x1) / (x0 - (y0 / y1) * x1);
+  const B = (y - centerPoint[1] - A * y0) / y1;
+  const rightSlope = rightPoint[2] - centerPoint[2];
+  const upSlope = upPoint[2] - centerPoint[2];
+  const z = centerPoint[2] + (y1 ? rightSlope * A + upSlope * B : 0); // handle degenerate case: y1 === 0 (infinite slope)
+
+  // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
+  // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
+  // Hmm maybe we should reuse the above right and up unit vectors to establish whether we're within the (a, b) 'radius'
+  // rather than using matrix inversion. Bound to be cheaper.
+
+  const inverseProjection = invert(transformMatrix);
+  const intersection = normalize(mvMultiply(inverseProjection, [x, y, z, 1]));
+  const [sx, sy] = intersection;
+
+  // z is needed downstream, to tell which one is the closest shape hit by an x, y ray (shapes can be tilted in z)
+  // it looks weird to even return items where inside === false, but it could be useful for hotspots outside the rectangle
+  return { z, intersection, inside: Math.abs(sx) <= a && Math.abs(sy) <= b, shape, index };
+};
+
 // set of shapes under a specific point
 const shapesAtPoint = (shapes, x, y) =>
-  shapes.map((shape, index) => {
-    const { transformMatrix, a, b } = shape;
-
-    // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
-    // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
-    const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
-    const rightPoint = normalize(mvMultiply(transformMatrix, [1, 0, 0, 1]));
-    const upPoint = normalize(mvMultiply(transformMatrix, [0, 1, 0, 1]));
-    const x0 = rightPoint[0] - centerPoint[0];
-    const y0 = rightPoint[1] - centerPoint[1];
-    const x1 = upPoint[0] - centerPoint[0];
-    const y1 = upPoint[1] - centerPoint[1];
-    const A = (x - centerPoint[0] - ((y - centerPoint[1]) / y1) * x1) / (x0 - (y0 / y1) * x1);
-    const B = (y - centerPoint[1] - A * y0) / y1;
-    const rightSlope = rightPoint[2] - centerPoint[2];
-    const upSlope = upPoint[2] - centerPoint[2];
-    const z = centerPoint[2] + (y1 ? rightSlope * A + upSlope * B : 0); // handle degenerate case: y1 === 0 (infinite slope)
-
-    // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
-    // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
-    // Hmm maybe we should reuse the above right and up unit vectors to establish whether we're within the (a, b) 'radius'
-    // rather than using matrix inversion. Bound to be cheaper.
-
-    const inverseProjection = invert(transformMatrix);
-    const intersection = normalize(mvMultiply(inverseProjection, [x, y, z, 1]));
-    const [sx, sy] = intersection;
-
-    // z is needed downstream, to tell which one is the closest shape hit by an x, y ray (shapes can be tilted in z)
-    // it looks weird to even return items where inside === false, but it could be useful for hotspots outside the rectangle
-    return { z, intersection, inside: Math.abs(sx) <= a && Math.abs(sy) <= b, shape, index };
-  });
+  shapes.map((shape, index) => shapeAtPoint(shape, index, x, y));
 
 // Z-order the possibly several shapes under the same point.
 // Since CSS X points to the right, Y to the bottom (not the top!) and Z toward the viewer, it's a left-handed coordinate
