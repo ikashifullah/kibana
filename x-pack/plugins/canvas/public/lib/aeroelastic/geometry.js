@@ -46,18 +46,20 @@ const atPointTuple = transformMatrix => {
   const rightSlope = rightPoint[2] - centerPoint[2];
   const upSlope = upPoint[2] - centerPoint[2];
   const inverseProjection = invert(transformMatrix);
-  const A0 = 1 / (x0 - (y0 / y1) * x1);
-  return { centerPoint, rightSlope, upSlope, inverseProjection, A0, y0, y1, x1 };
+  const A1 = 1 / (x0 - (y0 / y1) * x1);
+  const A2 = -((A1 * x1) / y1);
+  const A0 = -A1 * centerPoint[0] - A2 * centerPoint[1];
+  return { centerPoint, rightSlope, upSlope, inverseProjection, A0, A1, A2, y0, y1 };
 };
 
 const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
-  const { centerPoint, rightSlope, upSlope, inverseProjection, A0, y0, y1, x1 } = atPointTuple(
+  const { centerPoint, rightSlope, upSlope, inverseProjection, A0, A1, A2, y0, y1 } = atPointTuple(
     transformMatrix
   );
 
   // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
-  const A = A0 * (x - centerPoint[0] - ((y - centerPoint[1]) / y1) * x1);
+  const A = A0 + A1 * x + A2 * y;
   const B = (y - centerPoint[1] - A * y0) / y1;
   const z = centerPoint[2] + (y1 ? rightSlope * A + upSlope * B : 0); // handle degenerate case: y1 === 0 (infinite slope)
 
