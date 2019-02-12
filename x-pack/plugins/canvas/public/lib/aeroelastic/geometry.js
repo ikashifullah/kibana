@@ -35,7 +35,7 @@ import { dotProduct } from './matrix2d';
  *
  */
 
-const atPointTuple = transformMatrix => {
+const planeTuple = transformMatrix => {
   // for unknown perf gain, this could be cached per shape
   const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
   const rightPoint = normalize(mvMultiply(transformMatrix, [1, 0, 0, 1]));
@@ -50,25 +50,21 @@ const atPointTuple = transformMatrix => {
   const A1 = 1 / (x0 - (y0 / y1) * x1);
   const A2 = -((A1 * x1) / y1);
   const A0 = -A1 * centerPoint[0] - A2 * centerPoint[1];
-  const invy1 = 1 / y1;
-  const z0 =
-    centerPoint[2] +
-    rightSlope * A0 +
-    upSlope * A0 * y0 * -invy1 +
-    upSlope * -centerPoint[1] * invy1;
-  const zx = rightSlope * A1 + upSlope * A1 * y0 * -invy1;
-  const zy = rightSlope * A2 + upSlope * invy1 + upSlope * A2 * y0 * -invy1;
-  const magicVector = [zx, zy, z0];
-  return { inverseProjection, magicVector };
+  const invY1 = -1 / y1;
+  const z0 = centerPoint[2] + rightSlope * A0 + upSlope * invY1 * (centerPoint[1] + A0 * y0);
+  const zx = A1 * (rightSlope + upSlope * y0 * invY1);
+  const zy = -upSlope * invY1 + A2 * (rightSlope + upSlope * y0 * invY1);
+  const planeVector = [zx, zy, z0];
+  return { inverseProjection, planeVector };
 };
 
 const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
-  const { inverseProjection, magicVector } = atPointTuple(transformMatrix);
+  const { inverseProjection, planeVector } = planeTuple(transformMatrix);
 
   // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
-  const vect = [x, y, 1];
-  const z = dotProduct(magicVector, vect);
+  const screenNormalVector = [x, y, 1];
+  const z = dotProduct(planeVector, screenNormalVector);
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
   // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
