@@ -158,7 +158,12 @@ const alignmentGuideAnnotations = select(getAlignmentGuideAnnotations)(
 
 const hoverAnnotations = select(getHoverAnnotations)(
   configuration,
-  hoveredShape,
+  select((h, b) =>
+    h
+      .slice(0, 1)
+      .concat(b)
+      .filter((d, i, a) => a.indexOf(d) === i)
+  )(hoveredShapes, boxSelected),
   selectedPrimaryShapeIds,
   draggedShape
 );

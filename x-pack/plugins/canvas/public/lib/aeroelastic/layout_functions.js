@@ -1205,7 +1205,6 @@ export const getSelectionState = (
   boxSelected,
   allShapes
 ) => {
-  // console.log(boxSelected.map(s => s.id).join(', '));
   const uidUnchanged = uid === prev.uid;
   const mouseButtonUp = !down;
   const updateFromDirectSelect =
@@ -1308,14 +1307,16 @@ export const getAdHocChildrenAnnotations = (config, { shapes }) => {
     .map(borderAnnotation(config.getAdHocChildAnnotationName, config.hoverLift));
 };
 
-export const getHoverAnnotations = (config, shape, selectedPrimaryShapeIds, draggedShape) => {
-  return shape &&
-    shape.type !== 'annotation' &&
-    selectedPrimaryShapeIds.indexOf(shape.id) === -1 &&
-    !draggedShape
-    ? [borderAnnotation(config.hoverAnnotationName, config.hoverLift)(shape)]
-    : [];
-};
+export const getHoverAnnotations = (config, shapes, selectedPrimaryShapeIds, draggedShape) =>
+  shapes
+    .filter(
+      shape =>
+        shape &&
+        shape.type !== 'annotation' &&
+        selectedPrimaryShapeIds.indexOf(shape.id) === -1 &&
+        !draggedShape
+    )
+    .map(borderAnnotation(config.hoverAnnotationName, config.hoverLift));
 
 export const getSnappedShapes = (
   config,
