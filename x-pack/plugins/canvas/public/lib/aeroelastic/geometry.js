@@ -5,6 +5,7 @@
  */
 
 import { invert, mvMultiply, normalize, ORIGIN } from './matrix';
+import { dotProduct } from './matrix2d';
 
 /**
  * Pure calculations with geometry awareness - a set of rectangles with known size (a, b) and projection (transform matrix)
@@ -57,16 +58,17 @@ const atPointTuple = transformMatrix => {
     upSlope * -centerPoint[1] * invy1;
   const zx = rightSlope * A1 + upSlope * A1 * y0 * -invy1;
   const zy = rightSlope * A2 + upSlope * invy1 + upSlope * A2 * y0 * -invy1;
-
-  return { inverseProjection, z0, zx, zy };
+  const magicVector = [zx, zy, z0];
+  return { inverseProjection, magicVector };
 };
 
 const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
-  const { inverseProjection, z0, zx, zy } = atPointTuple(transformMatrix);
+  const { inverseProjection, magicVector } = atPointTuple(transformMatrix);
 
   // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
-  const z = z0 + zx * x + zy * y;
+  const vect = [x, y, 1];
+  const z = dotProduct(magicVector, vect);
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
   // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
