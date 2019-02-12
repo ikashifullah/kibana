@@ -5,7 +5,7 @@
  */
 
 import { getId } from './../../lib/get_id';
-import { landmarkPoint, shapesAt } from './geometry';
+import { landmarkPoint, shapesAt, insideAABB } from './geometry';
 
 import {
   compositeComponent,
@@ -1202,8 +1202,10 @@ export const getSelectionState = (
   metaHeld,
   multiselect,
   directSelect,
+  boxSelected,
   allShapes
 ) => {
+  // console.log(boxSelected.map(s => s.id).join(', '));
   const uidUnchanged = uid === prev.uid;
   const mouseButtonUp = !down;
   const updateFromDirectSelect =
@@ -1384,6 +1386,14 @@ export const getDragBox = (dragging, draggedShape, { x0, y0, x1, y1 }) =>
     a: Math.abs(x1 - x0) / 2,
     b: Math.abs(y1 - y0) / 2,
   };
+
+export const getDragBoxSelected = (box, shapes) => {
+  if (!box) {
+    return [];
+  }
+  const filter = insideAABB(box);
+  return shapes.filter(s => s.type !== 'annotation' && filter(s.transformMatrix));
+};
 
 export const getDragBoxAnnotation = (config, box) =>
   box

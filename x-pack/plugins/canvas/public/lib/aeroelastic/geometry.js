@@ -4,12 +4,34 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { invert, mvMultiply, normalize, ORIGIN, RIGHT, UP } from './matrix';
+import {
+  invert,
+  mvMultiply,
+  normalize,
+  ORIGIN,
+  RIGHT,
+  UP,
+  TOP_LEFT,
+  BOTTOM_LEFT,
+  TOP_RIGHT,
+  BOTTOM_RIGHT,
+} from './matrix';
 import { dotProduct } from './matrix2d';
 
 /**
  * Pure calculations with geometry awareness - a set of rectangles with known size (a, b) and projection (transform matrix)
  */
+
+const cornerScreenPositions = transformMatrix =>
+  // for unknown perf gain, this could be cached per shape
+  [TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT].map(corner =>
+    normalize(mvMultiply(transformMatrix, corner))
+  );
+
+export const insideAABB = ({ x, y, a, b }) => transformMatrix =>
+  cornerScreenPositions(transformMatrix).every(
+    ([xx, yy]) => x - a <= xx && xx <= x + a && y - b <= yy && yy <= y + b
+  );
 
 /**
  *

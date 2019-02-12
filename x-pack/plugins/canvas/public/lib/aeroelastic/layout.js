@@ -34,6 +34,7 @@ import {
   getDirectSelect,
   getDragBox,
   getDragBoxAnnotation,
+  getDragBoxSelected,
   getDraggedPrimaryShape,
   getFocusedShape,
   getGroupAction,
@@ -107,6 +108,8 @@ const selectedShapeObjects = select(getSelectedShapeObjects)(getScene);
 
 const selectedShapesPrev = select(getSelectedShapesPrev)(getScene);
 
+const boxSelected = select(getDragBoxSelected)(dragBox, shapes);
+
 const selectionState = select(getSelectionState)(
   selectedShapesPrev,
   configuration,
@@ -116,6 +119,7 @@ const selectionState = select(getSelectionState)(
   metaHeld,
   multiselectModifier,
   directSelect,
+  boxSelected,
   shapes
 );
 

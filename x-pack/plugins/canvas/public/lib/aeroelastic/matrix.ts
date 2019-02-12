@@ -48,6 +48,10 @@ const NANMATRIX = [
 export const ORIGIN = [0, 0, 0, 1] as vector3d;
 export const RIGHT = [1, 0, 0, 1] as vector3d;
 export const UP = [0, 1, 0, 1] as vector3d;
+export const TOP_LEFT = [-1, 1, 0, 1] as vector3d;
+export const TOP_RIGHT = [1, 1, 0, 1] as vector3d;
+export const BOTTOM_LEFT = [-1, -1, 0, 1] as vector3d;
+export const BOTTOM_RIGHT = [1, -1, 0, 1] as vector3d;
 
 export const translate = (x: number, y: number, z: number): transformMatrix3d =>
   [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1] as transformMatrix3d;
