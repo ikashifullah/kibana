@@ -43,8 +43,8 @@ const atPointTuple = transformMatrix => {
   const y0 = rightPoint[1] - centerPoint[1];
   const x1 = upPoint[0] - centerPoint[0];
   const y1 = upPoint[1] - centerPoint[1];
-  const rightSlope = rightPoint[2] - centerPoint[2];
-  const upSlope = upPoint[2] - centerPoint[2];
+  const rightSlope = y1 ? rightPoint[2] - centerPoint[2] : 0; // handle degenerate case: y1 === 0 (infinite slope)
+  const upSlope = y1 ? upPoint[2] - centerPoint[2] : 0; // handle degenerate case: y1 === 0 (infinite slope)
   const inverseProjection = invert(transformMatrix);
   const A1 = 1 / (x0 - (y0 / y1) * x1);
   const A2 = -((A1 * x1) / y1);
@@ -61,7 +61,7 @@ const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
   // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
   const A = A0 + A1 * x + A2 * y;
   const B = (y - centerPoint[1] - A * y0) / y1;
-  const z = centerPoint[2] + (y1 ? rightSlope * A + upSlope * B : 0); // handle degenerate case: y1 === 0 (infinite slope)
+  const z = centerPoint[2] + rightSlope * A + upSlope * B;
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
   // composition of transforms. Eg. this is a description of the idea: https://math.stackexchange.com/a/1685315
