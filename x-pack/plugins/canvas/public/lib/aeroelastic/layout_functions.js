@@ -1376,6 +1376,31 @@ export const getRotationAnnotations = (config, { shapes, selectedShapes }) => {
     .filter(identity);
 };
 
+export const getDragBox = (dragging, draggedShape, { x0, y0, x1, y1 }) =>
+  dragging &&
+  !draggedShape && {
+    x: (x0 + x1) / 2,
+    y: (y0 + y1) / 2,
+    a: Math.abs(x1 - x0) / 2,
+    b: Math.abs(y1 - y0) / 2,
+  };
+
+export const getDragBoxAnnotation = (config, box) =>
+  box
+    ? [
+        {
+          id: config.dragBoxAnnotationName,
+          type: 'annotation',
+          subtype: config.dragBoxAnnotationName,
+          interactive: false,
+          parent: null,
+          localTransformMatrix: translate(box.x, box.y, config.tooltipZ),
+          a: box.a,
+          b: box.b,
+        },
+      ]
+    : [];
+
 export const getAnnotatedShapes = (
   { shapes },
   alignmentGuideAnnotations,
@@ -1383,7 +1408,8 @@ export const getAnnotatedShapes = (
   rotationAnnotations,
   resizeAnnotations,
   adHocChildrenAnnotations,
-  rotationTooltipAnnotation
+  rotationTooltipAnnotation,
+  dragBoxAnnotation
 ) => {
   // fixme update it to a simple concatenator, no need for enlisting the now pretty long subtype list
   const annotations = [].concat(
@@ -1392,7 +1418,8 @@ export const getAnnotatedShapes = (
     rotationAnnotations,
     resizeAnnotations,
     adHocChildrenAnnotations,
-    rotationTooltipAnnotation
+    rotationTooltipAnnotation,
+    dragBoxAnnotation
   );
   // remove preexisting annotations
   const contentShapes = shapes.filter(shape => shape.type !== 'annotation');

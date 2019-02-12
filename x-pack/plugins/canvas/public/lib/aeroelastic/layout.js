@@ -32,6 +32,8 @@ import {
   getConstrainedShapesWithPreexistingAnnotations,
   getCursor,
   getDirectSelect,
+  getDragBox,
+  getDragBoxAnnotation,
   getDraggedPrimaryShape,
   getFocusedShape,
   getGroupAction,
@@ -95,6 +97,8 @@ const mouseTransformGesture = select(getMouseTransformGesture)(mouseTransformSta
 const transformGestures = mouseTransformGesture;
 
 const restateShapesEvent = select(getRestateShapesEvent)(primaryUpdate);
+
+const dragBox = select(getDragBox)(dragging, draggedShape, dragVector);
 
 // directSelect is an API entry point (via the `shapeSelect` action) that lets the client directly specify what thing
 const directSelect = select(getDirectSelect)(primaryUpdate);
@@ -204,6 +208,8 @@ const resizeAnnotations = select(resizeAnnotationsFunction)(configuration, group
 
 const rotationAnnotations = select(getRotationAnnotations)(configuration, grouping);
 
+const dragBoxAnnotation = select(getDragBoxAnnotation)(configuration, dragBox);
+
 const annotatedShapes = select(getAnnotatedShapes)(
   grouping,
   alignmentGuideAnnotations,
@@ -211,7 +217,8 @@ const annotatedShapes = select(getAnnotatedShapes)(
   rotationAnnotations,
   resizeAnnotations,
   adHocChildrenAnnotations,
-  rotationTooltipAnnotation
+  rotationTooltipAnnotation,
+  dragBoxAnnotation
 );
 
 const globalTransformShapes = select(cascadeProperties)(annotatedShapes);

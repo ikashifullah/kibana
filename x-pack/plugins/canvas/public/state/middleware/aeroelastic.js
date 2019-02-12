@@ -30,6 +30,7 @@ const aeroelasticConfiguration = {
   atopZ: 1000,
   depthSelect: true,
   devColor: 'magenta',
+  dragBoxAnnotationName: 'dragBoxAnnotation',
   groupName: 'group',
   groupResize: true,
   guideDistance: 3,
