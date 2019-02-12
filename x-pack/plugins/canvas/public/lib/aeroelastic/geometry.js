@@ -49,16 +49,6 @@ const atPointTuple = transformMatrix => {
   const A1 = 1 / (x0 - (y0 / y1) * x1);
   const A2 = -((A1 * x1) / y1);
   const A0 = -A1 * centerPoint[0] - A2 * centerPoint[1];
-  return { centerPoint, rightSlope, upSlope, inverseProjection, A0, A1, A2, y0, y1 };
-};
-
-const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
-  const { centerPoint, rightSlope, upSlope, inverseProjection, A0, A1, A2, y0, y1 } = atPointTuple(
-    transformMatrix
-  );
-
-  // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
-  // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
   const invy1 = 1 / y1;
   const z0 =
     centerPoint[2] +
@@ -67,6 +57,15 @@ const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
     upSlope * -centerPoint[1] * invy1;
   const zx = rightSlope * A1 + upSlope * A1 * y0 * -invy1;
   const zy = rightSlope * A2 + upSlope * invy1 + upSlope * A2 * y0 * -invy1;
+
+  return { inverseProjection, z0, zx, zy };
+};
+
+const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
+  const { inverseProjection, z0, zx, zy } = atPointTuple(transformMatrix);
+
+  // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
+  // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
   const z = z0 + zx * x + zy * y;
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
