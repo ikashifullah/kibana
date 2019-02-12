@@ -34,9 +34,8 @@ import { invert, mvMultiply, normalize, ORIGIN } from './matrix';
  *
  */
 
-const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
-  // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
-  // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
+const atPointTuple = transformMatrix => {
+  // for unknown perf gain, this could be cached per shape
   const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
   const rightPoint = normalize(mvMultiply(transformMatrix, [1, 0, 0, 1]));
   const upPoint = normalize(mvMultiply(transformMatrix, [0, 1, 0, 1]));
@@ -44,10 +43,22 @@ const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
   const y0 = rightPoint[1] - centerPoint[1];
   const x1 = upPoint[0] - centerPoint[0];
   const y1 = upPoint[1] - centerPoint[1];
-  const A = (x - centerPoint[0] - ((y - centerPoint[1]) / y1) * x1) / (x0 - (y0 / y1) * x1);
-  const B = (y - centerPoint[1] - A * y0) / y1;
   const rightSlope = rightPoint[2] - centerPoint[2];
   const upSlope = upPoint[2] - centerPoint[2];
+  const inverseProjection = invert(transformMatrix);
+  const A0 = 1 / (x0 - (y0 / y1) * x1);
+  return { centerPoint, rightSlope, upSlope, inverseProjection, A0, y0, y1, x1 };
+};
+
+const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
+  const { centerPoint, rightSlope, upSlope, inverseProjection, A0, y0, y1, x1 } = atPointTuple(
+    transformMatrix
+  );
+
+  // Determine z (depth) by composing the x, y vector out of local unit x and unit y vectors; by knowing the
+  // scalar multipliers for the unit x and unit y vectors, we can determine z from their respective 'slope' (gradient)
+  const A = A0 * (x - centerPoint[0] - ((y - centerPoint[1]) / y1) * x1);
+  const B = (y - centerPoint[1] - A * y0) / y1;
   const z = centerPoint[2] + (y1 ? rightSlope * A + upSlope * B : 0); // handle degenerate case: y1 === 0 (infinite slope)
 
   // We go full tilt with the inverse transform approach because that's general enough to handle any non-pathological
@@ -55,7 +66,6 @@ const rectangleAtPoint = ({ transformMatrix, a, b }, x, y) => {
   // Hmm maybe we should reuse the above right and up unit vectors to establish whether we're within the (a, b) 'radius'
   // rather than using matrix inversion. Bound to be cheaper.
 
-  const inverseProjection = invert(transformMatrix);
   const intersection = normalize(mvMultiply(inverseProjection, [x, y, z, 1]));
   const [sx, sy] = intersection;
   const inside = Math.abs(sx) <= a && Math.abs(sy) <= b;
