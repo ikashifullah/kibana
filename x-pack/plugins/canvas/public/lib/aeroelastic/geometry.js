@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the Elastic License.
  */
 
-import { invert, mvMultiply, normalize, ORIGIN } from './matrix';
+import { invert, mvMultiply, normalize, ORIGIN, RIGHT, UP } from './matrix';
 import { dotProduct } from './matrix2d';
 
 /**
@@ -38,8 +38,8 @@ import { dotProduct } from './matrix2d';
 const planeTuple = transformMatrix => {
   // for unknown perf gain, this could be cached per shape
   const centerPoint = normalize(mvMultiply(transformMatrix, ORIGIN));
-  const rightPoint = normalize(mvMultiply(transformMatrix, [1, 0, 0, 1]));
-  const upPoint = normalize(mvMultiply(transformMatrix, [0, 1, 0, 1]));
+  const rightPoint = normalize(mvMultiply(transformMatrix, RIGHT));
+  const upPoint = normalize(mvMultiply(transformMatrix, UP));
   const x0 = rightPoint[0] - centerPoint[0];
   const y0 = rightPoint[1] - centerPoint[1];
   const x1 = upPoint[0] - centerPoint[0];
