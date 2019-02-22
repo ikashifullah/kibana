@@ -66,7 +66,7 @@ export function uiRenderMixin(kbnServer, server, config) {
         const bundlePath = `${basePath}/bundles`;
         const styleSheetPaths = [
           `${bundlePath}/vendors.style.css`,
-          `${bundlePath}/commons.style.css`,
+          `${bundlePath}/commons.style.css`, `${bundlePath}/dirbs-view-styles.style.css`,
           `${bundlePath}/${app.getId()}.style.css`,
         ].concat(kbnServer.uiExports.styleSheetPaths.map(path => `${basePath}/${path.publicPath}`).reverse());
 

@@ -10,7 +10,7 @@ block content
       width: 100%;
       height: 100%;
       margin: 0;
-      background-color: #F5F5F5;
+      background-color: green;
     }
     .kibanaWelcomeView {
       background-color: #F5F5F5;
@@ -41,7 +41,7 @@ block content
       margin: 0 auto;
       position: relative;
       border: 2px solid transparent;
-      border-top: 2px solid #00A69B;
+      border-top: 2px solid #4C4F50;
       border-radius: 100%;
       display: block;
       opacity: 0;
@@ -61,12 +61,12 @@ block content
     }
 
     .kibanaWelcomeLogo {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzOSIgdmlld0JveD0iMCAwIDMwIDM5Ij4gIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+ICAgIDxwb2x5Z29uIGZpbGw9IiNGMDRFOTgiIHBvaW50cz0iMCAwIDAgMzQuNTQ3IDI5LjkyMiAuMDIiLz4gICAgPHBhdGggZmlsbD0iIzM0Mzc0MSIgZD0iTTAsMTQuNCBMMCwzNC41NDY4IEwxNC4yODcyLDE4LjA2MTIgQzEwLjA0MTYsMTUuNzM4IDUuMTgwNCwxNC40IDAsMTQuNCIvPiAgICA8cGF0aCBmaWxsPSIjMDBCRkIzIiBkPSJNMTcuMzc0MiwxOS45OTY4IEwyLjcyMSwzNi45MDQ4IEwxLjQzMzQsMzguMzg5MiBMMjkuMjYzOCwzOC4zODkyIEMyNy43NjE0LDMwLjgzODggMjMuNDA0MiwyNC4zMjY0IDE3LjM3NDIsMTkuOTk2OCIvPiAgPC9nPjwvc3ZnPg==");
+      background-image: url("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggNjYiPjx0aXRsZT5kdi1sb2dvPC90aXRsZT48cGF0aCBkPSJNMS43NCw5NC43YTYuNzMsNi43MywwLDAsMS0xLjc0LTVWMzguMjdhNi43NSw2Ljc1LDAsMCwxLDEuNzQtNSw2LjczLDYuNzMsMCwwLDEsNS0xLjc1SDI1LjE0cTEwLjU1LDAsMTguMTcsMy44N0EyNi45MiwyNi45MiwwLDAsMSw1NSw0Ni41NiwzNS4zMSwzNS4zMSwwLDAsMSw1OSw2NCwzNS45MywzNS45MywwLDAsMSw1NSw4MS40LDI2LjUzLDI2LjUzLDAsMCwxLDQzLjQsOTIuNThxLTcuNjIsMy44Ny0xOC4yNiwzLjg3SDYuN0E2LjY4LDYuNjgsMCwwLDEsMS43NCw5NC43Wm0yMi4zOS05Ljg1cTIwLjY1LDAsMjAuNjUtMjAuOVQyNC4xMyw0My4xNUgxNC4zMXY0MS43WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMzEpIi8+PHBhdGggZD0iTTExNy4zNiwzMmE2LjQzLDYuNDMsMCwwLDEsMy40OC0xLDcuNTIsNy41MiwwLDAsMSw1LDEuODQsNS42Niw1LjY2LDAsMCwxLDIuMiw0LjUxLDYuNDYsNi40NiwwLDAsMS0uNjQsMi43NkwxMDIuNTgsOTIuNThhNy4yNSw3LjI1LDAsMCwxLTMsMy4yNyw5LDksMCwwLDEtOC44MSwwLDcuMjIsNy4yMiwwLDAsMS0zLTMuMjdMNjIuOTQsNDAuMTFhNiw2LDAsMCwxLS42NC0yLjY3LDUuNjgsNS42OCwwLDAsMSwyLjMtNC42QTgsOCwwLDAsMSw2OS43MywzMWE2LjY4LDYuNjgsMCwwLDEsMy41NCwxLDYsNiwwLDAsMSwyLjQzLDIuOUw5NS4zNCw3OCwxMTUsMzQuODdBNi4wOSw2LjA5LDAsMCwxLDExNy4zNiwzMloiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTMxKSIvPjwvc3ZnPg==");
       background-repeat: no-repeat;
       background-size: contain;
       width: 60px;
       height: 60px;
-      margin: 10px 0px 10px 20px;
+      margin: 25px auto 0;
     }
 
     @keyframes rotation {
@@ -108,6 +108,6 @@ block content
       .kibanaWelcomeLogoCircle
         .kibanaWelcomeLogo
     .kibanaWelcomeText
-      | #{i18n('common.ui.welcomeMessage', { defaultMessage: 'Loading Kibana' })}
+      | #{i18n('common.ui.welcomeMessage', { defaultMessage: 'Loading DIRBS View' })}
 
   script(src=bootstrapScriptUrl)

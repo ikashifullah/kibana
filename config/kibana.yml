@@ -111,3 +111,23 @@
 
 # Specifies locale to be used for all localizable strings, dates and number formats.
 #i18n.locale: "en"
+
+# == CACF suggested changes ==
+
+# Hide Machine Learning Link
+xpack.ml.enabled: false
+
+# Hide Canvas Link
+xpack.canvas.enabled: false
+
+# Hide Infrastructure & Logs Links
+xpack.infra.enabled: false
+
+# Hide APM Link
+xpack.apm.enabled: false
+
+# Hide Monitoring Link
+xpack.monitoring.ui.enabled: false
+
+# Hide Timelion Link
+timelion.enabled: false
